@@ -1,10 +1,26 @@
 var app = function(){
+  var url = "http://api.fixer.io/latest?base=GBP";
+  makeRequest(url, populateDropDown);
+
   var inputElement = document.getElementById("search-query");
-  inputElement.addEventListener('keydown', searchInput);
+  inputElement.addEventListener("change", searchInput);
 
   ratesArray = [0,0,0,0,0,0,0]
   var chart = new HistoryChart("NONE", ratesArray);
 };
+
+var populateDropDown = function(){
+  if(this.status !== 200) return;
+  var jsonString = this.responseText;
+  var rates = JSON.parse(jsonString).rates;
+
+  var inputElement = document.getElementById("search-query");
+  for(rate in rates){
+    var option = document.createElement("option");
+    option.innerText = rate
+    inputElement.appendChild(option);
+  }
+}
 
 var searchInput = function(e){
   var inputElement = document.getElementById("search-query");
@@ -13,9 +29,7 @@ var searchInput = function(e){
 
   if (input === "") return;
 
-  if (e.key === "Enter"){
     makeRequest(url, findTodaysRate); 
-  }
 };
 
 var findTodaysRate = function(){
@@ -50,12 +64,10 @@ var getHistoryChartArray = function(currency){
 
     getHistRate(url, currency, i)
     };
-    
   var chart = new HistoryChart(currency, ratesArray);
 };
 
 var getHistRate = function(url, currency, index){
-  
   makeRequest(url, function(){
     if(this.status !== 200) return;
 
