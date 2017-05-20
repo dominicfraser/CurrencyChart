@@ -6,7 +6,16 @@ var app = function(){
   inputElement.addEventListener("change", searchInput);
 
   ratesArray = [0,0,0,0,0,0,0]
-  var chart = new HistoryChart("NONE", ratesArray);
+
+
+  var jsonSavedCurrency = localStorage.getItem("currency");
+  if (jsonSavedCurrency !== null){
+    searchInput();
+    var objectSavedCurrency = JSON.parse(jsonSavedCurrency);
+    getHistoryChartArray(objectSavedCurrency);
+  } else {
+    var chart = new HistoryChart("NONE", ratesArray);
+  }
 };
 
 var populateDropDown = function(){
@@ -15,21 +24,25 @@ var populateDropDown = function(){
   var rates = JSON.parse(jsonString).rates;
 
   var inputElement = document.getElementById("search-query");
+  var jsonSavedCurrency = localStorage.getItem("currency");
+  var objectSavedCurrency = JSON.parse(jsonSavedCurrency);
+
   for(rate in rates){
     var option = document.createElement("option");
     option.innerText = rate
+    if(rate === objectSavedCurrency){
+      option.selected = true;
+    }
     inputElement.appendChild(option);
   }
-}
+};
 
-var searchInput = function(e){
+var searchInput = function(){
   var inputElement = document.getElementById("search-query");
   var input = inputElement.value;
   var url = "http://api.fixer.io/latest?base=GBP";
 
-  if (input === "") return;
-
-    makeRequest(url, findTodaysRate); 
+  makeRequest(url, findTodaysRate); 
 };
 
 var findTodaysRate = function(){
@@ -44,6 +57,10 @@ var findTodaysRate = function(){
 var setRate = function(ratesObject){
   var inputElement = document.getElementById("search-query");
   var input = inputElement.value;
+
+  var inputJSON = JSON.stringify(input)
+  localStorage.setItem("currency",inputJSON);
+
   var rateP = document.getElementById("rate");
   rateP.innerHTML = ""
 console.log(ratesObject)
@@ -76,6 +93,7 @@ var getHistRate = function(url, currency, index){
     var foundRate = ratesOb[currency];
     console.log(index)
     ratesArray[index] = foundRate;
+
     var chart = new HistoryChart(currency, ratesArray);
   })
 };
