@@ -7,7 +7,6 @@ var app = function(){
 
   ratesArray = [0,0,0,0,0,0,0]
 
-
   var jsonSavedCurrency = localStorage.getItem("currency");
   if (jsonSavedCurrency !== null){
     searchInput();
@@ -77,7 +76,7 @@ var getHistoryChartArray = function(currency){
 
     var todayUTC = today.toISOString().substring(0,10);
     
-    var url = "https://api.fixer.io/" + todayUTC + "/latest?base=GBP"
+    var url = "https://api.fixer.io/" + todayUTC + "?base=GBP"
 
     getHistRate(url, currency, i)
     };
